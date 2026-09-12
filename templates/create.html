@@ -32,12 +32,12 @@
 
                     <div class="form-group">
                         <label>آدرس سرور</label>
-                        <input type="text" name="server_address" placeholder="example.com" required>
+                        <input type="text" name="server_address" value="{{ current_ip }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>پورت سرور</label>
-                        <input type="number" name="server_port" value="443" required>
+                        <input type="number" name="server_port" value="{{ server_port }}" required>
                     </div>
 
                     <div class="form-group">

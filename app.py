@@ -5,6 +5,7 @@ import qrcode
 import io
 import base64
 import time
+import urllib.request
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, Response
@@ -14,6 +15,21 @@ app.secret_key = os.environ.get('SECRET_KEY', 'v2ray-panel-secret-key-2024')
 
 PASSWORD = os.environ.get('PANEL_PASSWORD', 'abol666k')
 DB_FILE = 'configs.json'
+SERVER_PORT = int(os.environ.get('SERVER_PORT', 8080))
+SERVER_PATH = os.environ.get('SERVER_PATH', '/v2ray')
+SERVER_UUID = os.environ.get('SERVER_UUID', 'ba4eb3e6-9a3d-426e-bc7b-a5dc0c0c6b5f')
+
+
+def get_current_ip():
+    try:
+        with urllib.request.urlopen('https://ifconfig.me', timeout=5) as r:
+            return r.read().decode().strip()
+    except:
+        try:
+            with urllib.request.urlopen('https://ipinfo.io/ip', timeout=5) as r:
+                return r.read().decode().strip()
+        except:
+            return 'YOUR_SERVER_IP'
 
 
 def load_configs():
@@ -117,6 +133,7 @@ def dashboard():
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_config():
+    current_ip = get_current_ip()
     if request.method == 'POST':
         configs = load_configs()
         data = request.form
@@ -124,12 +141,12 @@ def create_config():
         config = {
             'id': str(int(time.time() * 1000)),
             'remark': data.get('remark', 'Config'),
-            'server_address': data.get('server_address', ''),
-            'server_port': int(data.get('server_port', 443)),
-            'uuid': data.get('uuid', generate_uuid()),
+            'server_address': data.get('server_address', current_ip),
+            'server_port': int(data.get('server_port', SERVER_PORT)),
+            'uuid': data.get('uuid', SERVER_UUID),
             'host': data.get('host', ''),
             'sni': data.get('sni', ''),
-            'path': data.get('path', '/'),
+            'path': data.get('path', SERVER_PATH),
             'created_at': datetime.now().isoformat(),
             'active': True,
             'traffic_limit': int(data.get('traffic_limit', 0)) * (1024**3) if data.get('traffic_limit') and data.get('traffic_limit') != '0' else 0,
@@ -163,7 +180,7 @@ def create_config():
 
         return redirect(url_for('config_detail', config_id=config['id']))
 
-    return render_template('create.html', uuid=generate_uuid())
+    return render_template('create.html', uuid=SERVER_UUID, current_ip=get_current_ip(), server_port=SERVER_PORT)
 
 
 @app.route('/config/<config_id>')
