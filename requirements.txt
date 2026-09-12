@@ -1,0 +1,4 @@
+flask==3.0.0
+qrcode[pil]==7.4.2
+uuid6==2024.1.12
+gunicorn==21.2.0

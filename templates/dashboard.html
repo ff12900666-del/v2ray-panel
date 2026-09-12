@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد - V2Ray Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚡ V2Ray Panel</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link active">داشبورد</a>
+            <a href="/create" class="nav-link">ساخت کانفینگ</a>
+            <a href="/logout" class="nav-link btn-logout">خروج</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>داشبورد مدیریت</h2>
+            <a href="/create" class="btn btn-primary">+ ساخت کانفینگ جدید</a>
+        </div>
+
+        {% if configs %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <div class="stat-number">{{ configs|length }}</div>
+                    <div class="stat-label">کل کانفینگ‌ها</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon active-icon">✅</div>
+                <div class="stat-info">
+                    <div class="stat-number">{{ configs|selectattr('active')|list|length }}</div>
+                    <div class="stat-label">فعال</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon inactive-icon">❌</div>
+                <div class="stat-info">
+                    <div class="stat-number">{{ configs|rejectattr('active')|list|length }}</div>
+                    <div class="stat-label">غیرفعال</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="configs-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>نام</th>
+                        <th>وضعیت</th>
+                        <th>حجم مصرفی</th>
+                        <th>کاربران</th>
+                        <th>روز باقیمانده</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for config in configs %}
+                    <tr class="{% if not config.active %}inactive-row{% endif %} {% if config.is_expired %}expired-row{% endif %}">
+                        <td>
+                            <a href="/config/{{ config.id }}" class="config-name">{{ config.remark }}</a>
+                        </td>
+                        <td>
+                            <span class="status-badge {% if config.active and not config.is_expired %}status-active{% else %}status-inactive{% endif %}">
+                                {% if config.is_expired %}منقضی شده{% elif config.active %}فعال{% else %}غیرفعال{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="traffic-info">
+                                {% if config.unlimited_traffic %}
+                                    <span class="unlimited-badge">∞ نامحدود</span>
+                                {% else %}
+                                    <span>{{ config.traffic_used_gb }} / {{ config.traffic_limit_gb }} GB</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill {% if config.traffic_percent > 80 %}progress-danger{% elif config.traffic_percent > 50 %}progress-warning{% endif %}" style="width: {{ config.traffic_percent }}%"></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if config.unlimited_users %}
+                                <span class="unlimited-badge">∞ نامحدود</span>
+                            {% else %}
+                                <span>{{ config.connected_users }} / {{ config.max_users }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if config.unlimited_days %}
+                                <span class="unlimited-badge">∞ نامحدود</span>
+                            {% elif config.is_expired %}
+                                <span class="text-danger">منقضی شده</span>
+                            {% elif config.days_left is not none %}
+                                <span>{{ config.days_left }} روز</span>
+                            {% else %}
+                                <span>-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-toggle {% if config.active %}btn-danger{% else %}btn-success{% endif %}" onclick="toggleConfig('{{ config.id }}')">
+                                    {% if config.active %}خاموش{% else %}روشن{% endif %}
+                                </button>
+                                <a href="/edit/{{ config.id }}" class="btn btn-sm btn-secondary">ویرایش</a>
+                                <form method="POST" action="/delete/{{ config.id }}" style="display:inline" onsubmit="return confirm('آیا مطمئن هستید؟')">
+                                    <button type="submit" class="btn btn-sm btn-danger">حذف</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>هنوز کانفینگی ندارید</h3>
+            <p>اولین کانفینگ خود را بسازید</p>
+            <a href="/create" class="btn btn-primary">+ ساخت کانفینگ</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleConfig(id) {
+            fetch('/toggle/' + id, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) location.reload();
+                });
+        }
+    </script>
+</body>
+</html>

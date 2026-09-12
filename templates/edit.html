@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویرایش - V2Ray Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚡ V2Ray Panel</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">داشبورد</a>
+            <a href="/create" class="nav-link">ساخت کانفینگ</a>
+            <a href="/logout" class="nav-link btn-logout">خروج</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>ویرایش {{ config.remark }}</h2>
+        </div>
+
+        <div class="form-card">
+            <form method="POST" action="/edit/{{ config.id }}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نام کانفینگ</label>
+                        <input type="text" name="remark" value="{{ config.remark }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>آدرس سرور</label>
+                        <input type="text" name="server_address" value="{{ config.server_address }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>پورت سرور</label>
+                        <input type="number" name="server_port" value="{{ config.server_port }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Host</label>
+                        <input type="text" name="host" value="{{ config.get('host', '') }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>SNI</label>
+                        <input type="text" name="sni" value="{{ config.get('sni', '') }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Path</label>
+                        <input type="text" name="path" value="{{ config.get('path', '/') }}">
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <h3>محدودیت‌ها</h3>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>حجم (GB)</label>
+                        <input type="number" name="traffic_limit" value="{{ (config.traffic_limit / (1024*1024*1024))|int if config.traffic_limit > 0 else '' }}" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_traffic" {% if config.unlimited_traffic %}checked{% endif %}> نامحدود
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>حداکثر کاربر</label>
+                        <input type="number" name="max_users" value="{{ config.max_users if config.max_users > 0 else '' }}" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_users" {% if config.unlimited_users %}checked{% endif %}> نامحدود
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>روز ( اعتبار )</label>
+                        <input type="number" name="expire_days" value="{{ config.expire_days if config.expire_days > 0 else '' }}" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_days" {% if config.unlimited_days %}checked{% endif %}> نامحدود
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">ذخیره تغییرات</button>
+                    <a href="/config/{{ config.id }}" class="btn btn-secondary btn-lg">انصراف</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

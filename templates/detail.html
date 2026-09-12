@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.remark }} - V2Ray Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚡ V2Ray Panel</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">داشبورد</a>
+            <a href="/create" class="nav-link">ساخت کانفینگ</a>
+            <a href="/logout" class="nav-link btn-logout">خروج</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>{{ config.remark }}</h2>
+            <div class="header-actions">
+                <a href="/edit/{{ config.id }}" class="btn btn-secondary">ویرایش</a>
+                <a href="/" class="btn btn-secondary">بازگشت</a>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <!-- QR Code Card -->
+            <div class="card">
+                <h3>📱 QR Code</h3>
+                <div class="qr-container">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-image">
+                </div>
+                <p class="hint">کد QR را در V2Ray اسکن کنید</p>
+            </div>
+
+            <!-- Config Info Card -->
+            <div class="card">
+                <h3>📊 اطلاعات</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">وضعیت:</span>
+                        <span class="status-badge {% if config.active and not config.is_expired %}status-active{% else %}status-inactive{% endif %}">
+                            {% if config.is_expired %}منقضی شده{% elif config.active %}فعال{% else %}غیرفعال{% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">سرور:</span>
+                        <span>{{ config.server_address }}:{{ config.server_port }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">حجم:</span>
+                        <span>
+                            {% if config.unlimited_traffic %}
+                                ∞ نامحدود
+                            {% else %}
+                                {{ config.traffic_used_gb }} / {{ config.traffic_limit_gb }} GB
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">کاربران:</span>
+                        <span>
+                            {% if config.unlimited_users %}
+                                ∞ نامحدود
+                            {% else %}
+                                {{ config.connected_users }} / {{ config.max_users }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">روز باقیمانده:</span>
+                        <span>
+                            {% if config.unlimited_days %}
+                                ∞ نامحدود
+                            {% elif config.is_expired %}
+                                <span class="text-danger">منقضی شده</span>
+                            {% elif config.days_left is not none %}
+                                {{ config.days_left }} روز
+                            {% else %}
+                                -
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">تاریخ ساخت:</span>
+                        <span>{{ config.created_at[:10] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links Card -->
+            <div class="card full-width">
+                <h3>🔗 لینک‌ها</h3>
+
+                <div class="link-section">
+                    <label>VMess Link:</label>
+                    <div class="link-box">
+                        <input type="text" value="{{ vmess_link }}" readonly id="vmess-link">
+                        <button class="btn btn-sm btn-primary" onclick="copyLink('vmess-link')">کپی</button>
+                    </div>
+                </div>
+
+                <div class="link-section">
+                    <label>Subscription Link:</label>
+                    <div class="link-box">
+                        <input type="text" value="{{ sub_link }}" readonly id="sub-link">
+                        <button class="btn btn-sm btn-primary" onclick="copyLink('sub-link')">کپی</button>
+                    </div>
+                </div>
+
+                <div class="link-section">
+                    <label>برای V2Ray:</label>
+                    <div class="link-box">
+                        <input type="text" value="v2rayng://install-config?url={{ sub_link|urlencode }}" readonly id="v2rayng-link">
+                        <button class="btn btn-sm btn-primary" onclick="copyLink('v2rayng-link')">کپی</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyLink(id) {
+            const input = document.getElementById(id);
+            input.select();
+            document.execCommand('copy');
+            alert('کپی شد!');
+        }
+    </script>
+</body>
+</html>

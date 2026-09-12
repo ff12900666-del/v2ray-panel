@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Ray Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon">⚡</div>
+                <h1>V2Ray Panel</h1>
+                <p>ورود به پنل مدیریت</p>
+            </div>
+            {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label>رمز عبور</label>
+                    <input type="password" name="password" placeholder="رمز عبور را وارد کنید" required autofocus>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">ورود</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

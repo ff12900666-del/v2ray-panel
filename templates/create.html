@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساخت کانفینگ - V2Ray Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">⚡ V2Ray Panel</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">داشبورد</a>
+            <a href="/create" class="nav-link active">ساخت کانفینگ</a>
+            <a href="/logout" class="nav-link btn-logout">خروج</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>ساخت کانفینگ جدید</h2>
+        </div>
+
+        <div class="form-card">
+            <form method="POST" action="/create">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>نام کانفینگ</label>
+                        <input type="text" name="remark" placeholder="مثال: ایران ۱" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>آدرس سرور</label>
+                        <input type="text" name="server_address" placeholder="example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>پورت سرور</label>
+                        <input type="number" name="server_port" value="443" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>UUID</label>
+                        <input type="text" name="uuid" value="{{ uuid }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Host</label>
+                        <input type="text" name="host" placeholder="example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>SNI</label>
+                        <input type="text" name="sni" placeholder="example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Path</label>
+                        <input type="text" name="path" value="/">
+                    </div>
+                </div>
+
+                <div class="form-divider">
+                    <h3>محدودیت‌ها</h3>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>حجم (GB)</label>
+                        <input type="number" name="traffic_limit" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_traffic"> نامحدود
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>حداکثر کاربر</label>
+                        <input type="number" name="max_users" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_users"> نامحدود
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>روز ( اعتبار )</label>
+                        <input type="number" name="expire_days" placeholder="0 = نامحدود" min="0">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="unlimited_days"> نامحدود
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">ساخت کانفینگ</button>
+                    <a href="/" class="btn btn-secondary btn-lg">انصراف</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
